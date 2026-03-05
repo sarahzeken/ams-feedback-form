@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Cloud AMS – Request Form</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+    .wrapper { max-width: 680px; margin: 0 auto; }
+
+    .header {
+      background: linear-gradient(135deg, #0369a1, #0ea5e9);
+      border-radius: 16px 16px 0 0;
+      padding: 28px 36px;
+      color: #fff;
+    }
+    .header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .header-icon { font-size: 28px; }
+    .header-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 1px; opacity: 0.8; text-transform: uppercase; }
+    .header h1 { font-size: 20px; font-weight: 700; }
+    .header p { opacity: 0.88; font-size: 14px; margin-top: 6px; }
+
+    .body {
+      background: #fff;
+      border-radius: 0 0 16px 16px;
+      padding: 32px 36px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+    }
+
+    .field { margin-bottom: 18px; }
+    .field label { display: block; font-weight: 600; font-size: 13px; color: #1e293b; margin-bottom: 5px; }
+    .field label .req { color: #e11d48; }
+    .field .err { color: #e11d48; font-size: 12px; margin-top: 4px; display: none; }
+    .field .err.show { display: block; }
+
+    input, select, textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1.5px solid #cbd5e1; border-radius: 7px;
+      font-size: 14px; color: #1e293b; background: #fff;
+      outline: none; font-family: inherit;
+    }
+    input.invalid, select.invalid, textarea.invalid { border-color: #e11d48; }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .type-card {
+      border: 2px solid #e2e8f0; background: #fafafa;
+      border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all 0.15s;
+    }
+    .type-card:hover { border-color: #7dd3fc; background: #f8faff; }
+    .type-card.selected { border-color: #0ea5e9; background: #f0f9ff; }
+    .type-card .t-icon { font-size: 18px; margin-bottom: 3px; }
+    .type-card .t-label { font-weight: 600; font-size: 13px; color: #0f172a; margin-bottom: 2px; }
+    .type-card .t-desc { font-size: 11px; color: #64748b; line-height: 1.4; }
+
+    .divider { border-top: 1px solid #f1f5f9; margin: 20px 0; }
+    .section-label { color: #64748b; font-size: 13px; margin-bottom: 16px; }
+
+    .btn-submit {
+      width: 100%; background: linear-gradient(135deg, #0369a1, #0ea5e9);
+      color: #fff; border: none; border-radius: 10px; padding: 14px;
+      font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 8px;
+      font-family: inherit;
+    }
+    .btn-submit:disabled { background: #7dd3fc; cursor: not-allowed; }
+
+    .footer-note { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 14px; }
+    .footer-note a { color: #0ea5e9; }
+
+    .alert-error {
+      background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px;
+      padding: 12px 16px; margin-bottom: 16px; color: #b91c1c; font-size: 13px;
+      display: none;
+    }
+    .alert-error.show { display: block; }
+
+    .success-screen {
+      display: none; text-align: center;
+      padding: 48px 40px;
+    }
+    .success-screen.show { display: block; }
+    .success-screen .s-icon { font-size: 56px; margin-bottom: 16px; }
+    .success-screen h2 { color: #0f172a; margin-bottom: 8px; font-size: 22px; }
+    .success-screen p { color: #475569; font-size: 15px; margin-bottom: 8px; }
+    .success-screen .s-sub { color: #64748b; font-size: 13px; margin-bottom: 28px; }
+    .btn-reset {
+      background: #0ea5e9; color: #fff; border: none; border-radius: 8px;
+      padding: 11px 28px; font-weight: 600; font-size: 15px; cursor: pointer; font-family: inherit;
+    }
+
+    .form-section { display: none; }
+    .form-section.show { display: block; }
+
+    @media (max-width: 540px) {
+      .body, .header { padding: 24px 20px; }
+      .grid-2, .type-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div class="header-row">
+      <span class="header-icon">🗂️</span>
+      <div>
+        <div class="header-eyebrow">3D Cloud</div>
+        <h1>Asset Management System</h1>
+      </div>
+    </div>
+    <p>Submit feature requests, bug reports, or documentation feedback to help us improve the AMS.</p>
+  </div>
+
+  <div class="body">
+
+    <!-- Success Screen -->
+    <div class="success-screen" id="successScreen">
+      <div class="s-icon">✅</div>
+      <h2>Request Submitted!</h2>
+      <p>Thank you, <strong id="successName"></strong>. Your request has been received.</p>
+      <p class="s-sub">The 3D Cloud team will review your submission and follow up at <strong id="successEmail"></strong> if needed.</p>
+      <button class="btn-reset" onclick="resetForm()">Submit Another Request</button>
+    </div>
+
+    <!-- Form -->
+    <div id="mainForm">
+
+      <!-- Request Type -->
+      <div class="field">
+        <label>Request Type <span class="req">*</span></label>
+        <div class="type-grid" id="typeGrid">
+          <div class="type-card" data-type="feature" onclick="selectType('feature')">
+            <div class="t-icon">✨</div>
+            <div class="t-label">Feature / Enhancement Request</div>
+            <div class="t-desc">Suggest a new capability or improvement to existing functionality.</div>
+          </div>
+          <div class="type-card" data-type="bug" onclick="selectType('bug')">
+            <div class="t-icon">🐛</div>
+            <div class="t-label">Bug Report</div>
+            <div class="t-desc">Report unexpected behavior or a system error.</div>
+          </div>
+          <div class="type-card" data-type="docs" onclick="selectType('docs')">
+            <div class="t-icon">📄</div>
+            <div class="t-label">Documentation Request</div>
+            <div class="t-desc">Request new docs or improvements to existing content.</div>
+          </div>
+          <div class="type-card" data-type="howto" onclick="selectType('howto')">
+            <div class="t-icon">🎓</div>
+            <div class="t-label">How-To / Training Guide</div>
+            <div class="t-desc">Request a walkthrough or step-by-step guide for a specific task.</div>
+          </div>
+        </div>
+        <div class="err" id="err-requestType">Please select a request type.</div>
+      </div>
+
+      <!-- Rest of form (shown after type selected) -->
+      <div class="form-section" id="formBody">
+        <div class="divider"></div>
+
+        <!-- Summary -->
+        <div class="field">
+          <label for="summary">Summary <span class="req">*</span></label>
+          <input type="text" id="summary" placeholder="Brief one-line description of your request" oninput="clearErr('summary')" />
+          <div class="err" id="err-summary">Please provide a summary.</div>
+        </div>
+
+        <!-- AMS Area + Priority -->
+        <div class="grid-2">
+          <div class="field">
+            <label for="amsArea">AMS Area <span class="req">*</span></label>
+            <select id="amsArea" onchange="clearErr('amsArea')">
+              <option value="">Select area…</option>
+              <option>Authentication & User Management</option>
+              <option>Client & Client App Management</option>
+              <option>Search & Browse / Categories</option>
+              <option>Products & Product Builder</option>
+              <option>Asset Library</option>
+              <option>Material Editor</option>
+              <option>Assembly Editor / Snappy</option>
+              <option>Data Manager</option>
+              <option>Orders & SOW Management</option>
+              <option>Jobs / Universal Job System (UJS)</option>
+              <option>Reports & Analytics</option>
+              <option>HD Render / 360 Spins</option>
+              <option>Spec Manager</option>
+              <option>Stores & Typed Attributes</option>
+              <option>API / Integrations</option>
+              <option>Other / General</option>
+            </select>
+            <div class="err" id="err-amsArea">Please select an AMS area.</div>
+          </div>
+          <div class="field">
+            <label for="priority">Priority <span class="req">*</span></label>
+            <select id="priority" onchange="clearErr('priority')">
+              <option value="">Select priority…</option>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Critical</option>
+            </select>
+            <div class="err" id="err-priority">Please select a priority.</div>
+          </div>
+        </div>
+
+        <!-- Bug fields -->
+        <div class="form-section" id="bugFields">
+          <div class="field">
+            <label for="stepsToReproduce">Steps to Reproduce <span class="req">*</span></label>
+            <textarea id="stepsToReproduce" placeholder="1. Navigate to…&#10;2. Click…&#10;3. Observe…" oninput="clearErr('stepsToReproduce')"></textarea>
+            <div class="err" id="err-stepsToReproduce">Please describe steps to reproduce.</div>
+          </div>
+          <div class="field">
+            <label for="currentBehavior">Current Behavior</label>
+            <textarea id="currentBehavior" placeholder="What is happening now?"></textarea>
+          </div>
+          <div class="field">
+            <label for="expectedBehavior">Expected Behavior</label>
+            <textarea id="expectedBehavior" placeholder="What should happen instead?"></textarea>
+          </div>
+        </div>
+
+        <!-- Feature fields -->
+        <div class="form-section" id="featureFields">
+          <div class="field">
+            <label for="enhancement">Describe the Enhancement</label>
+            <textarea id="enhancement" placeholder="Describe what you'd like added or changed and how it would work…" style="min-height:100px"></textarea>
+          </div>
+        </div>
+
+        <!-- Docs/HowTo fields -->
+        <div class="form-section" id="docsFields">
+          <div class="field">
+            <label for="docTopic">Documentation Topic <span class="req">*</span></label>
+            <input type="text" id="docTopic" placeholder="e.g. API Key generation and Firebase setup" oninput="clearErr('docTopic')" />
+            <div class="err" id="err-docTopic">Please describe the topic.</div>
+          </div>
+          <div class="field">
+            <label for="docDetail">Additional Detail</label>
+            <textarea id="docDetail" placeholder="What question are you trying to answer, or what's confusing in the current docs?"></textarea>
+          </div>
+        </div>
+
+        <!-- Business Impact -->
+        <div class="field">
+          <label for="businessImpact">Business Impact / Use Case</label>
+          <textarea id="businessImpact" placeholder="How does this affect your workflow or business? Who else is impacted?"></textarea>
+        </div>
+
+        <div class="divider"></div>
+        <p class="section-label">Your contact information</p>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="name">Your Name <span class="req">*</span></label>
+            <input type="text" id="name" placeholder="First Last" oninput="clearErr('name')" />
+            <div class="err" id="err-name">Please enter your name.</div>
+          </div>
+          <div class="field">
+            <label for="email">Email Address <span class="req">*</span></label>
+            <input type="email" id="email" placeholder="you@company.com" oninput="clearErr('email')" />
+            <div class="err" id="err-email">Please enter a valid email.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="company">Company / Client Name</label>
+          <input type="text" id="company" placeholder="e.g. CORT, Lowe's…" />
+        </div>
+
+        <div class="alert-error" id="alertError">
+          ⚠️ Something went wrong submitting your request. Please try again.
+        </div>
+
+        <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">Submit Request →</button>
+
+        <p class="footer-note">
+          Submissions go to the AMS Requests Google Sheet ·
+          <a href="https://developers.3dcloud.com/3d-cloud-ams/docs/getting-started-guides-1" target="_blank">View AMS User Guide</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbyOWsOa1pY3kzZrpnlvO6mTag9oBvvd1k49boB98JCM54FdzMEvp8bu_zRLZSRIfINQ/exec";
+  let selectedType = "";
+
+  function selectType(type) {
+    selectedType = type;
+    document.querySelectorAll(".type-card").forEach(c => c.classList.remove("selected"));
+    document.querySelector(`[data-type="${type}"]`).classList.add("selected");
+    clearErr("requestType");
+
+    // Show main form body
+    document.getElementById("formBody").classList.add("show");
+
+    // Toggle conditional sections
+    document.getElementById("bugFields").classList.toggle("show", type === "bug");
+    document.getElementById("featureFields").classList.toggle("show", type === "feature");
+    document.getElementById("docsFields").classList.toggle("show", type === "docs" || type === "howto");
+
+    // Update docTopic placeholder
+    if (type === "howto") {
+      document.getElementById("docTopic").placeholder = "e.g. How to bulk-import products using Data Manager";
+    } else {
+      document.getElementById("docTopic").placeholder = "e.g. API Key generation and Firebase setup";
+    }
+  }
+
+  function clearErr(field) {
+    const el = document.getElementById("err-" + field);
+    if (el) el.classList.remove("show");
+    const input = document.getElementById(field);
+    if (input) input.classList.remove("invalid");
+  }
+
+  function showErr(field) {
+    const el = document.getElementById("err-" + field);
+    if (el) el.classList.add("show");
+    const input = document.getElementById(field);
+    if (input) input.classList.add("invalid");
+  }
+
+  function val(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : "";
+  }
+
+  function validate() {
+    let valid = true;
+    if (!selectedType) { document.getElementById("err-requestType").classList.add("show"); valid = false; }
+    if (!val("summary")) { showErr("summary"); valid = false; }
+    if (!val("amsArea")) { showErr("amsArea"); valid = false; }
+    if (!val("priority")) { showErr("priority"); valid = false; }
+    if (!val("name")) { showErr("name"); valid = false; }
+    const email = val("email");
+    if (!email || !/\S+@\S+\.\S+/.test(email)) { showErr("email"); valid = false; }
+    if (selectedType === "bug" && !val("stepsToReproduce")) { showErr("stepsToReproduce"); valid = false; }
+    if ((selectedType === "docs" || selectedType === "howto") && !val("docTopic")) { showErr("docTopic"); valid = false; }
+    return valid;
+  }
+
+  function buildPayload() {
+    const typeLabels = {
+      feature: "Feature / Enhancement Request",
+      bug: "Bug Report",
+      docs: "Documentation Request",
+      howto: "How-To / Training Guide"
+    };
+    let details = "";
+    if (selectedType === "bug") {
+      details = `Steps to Reproduce: ${val("stepsToReproduce")}` +
+        (val("currentBehavior") ? `\nCurrent Behavior: ${val("currentBehavior")}` : "") +
+        (val("expectedBehavior") ? `\nExpected Behavior: ${val("expectedBehavior")}` : "");
+    } else if (selectedType === "feature") {
+      details = val("enhancement") ? `Enhancement: ${val("enhancement")}` : "";
+    } else {
+      details = `Topic: ${val("docTopic")}` +
+        (val("docDetail") ? `\nDetail: ${val("docDetail")}` : "");
+    }
+    return {
+      requestType: typeLabels[selectedType],
+      priority: val("priority"),
+      amsArea: val("amsArea"),
+      summary: val("summary"),
+      details,
+      businessImpact: val("businessImpact"),
+      name: val("name"),
+      email: val("email"),
+      company: val("company"),
+    };
+  }
+
+  async function handleSubmit() {
+    document.getElementById("alertError").classList.remove("show");
+    if (!validate()) return;
+
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.textContent = "⏳ Submitting…";
+
+    try {
+      await fetch(SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildPayload()),
+      });
+
+      // Show success
+      document.getElementById("successName").textContent = val("name");
+      document.getElementById("successEmail").textContent = val("email");
+      document.getElementById("mainForm").style.display = "none";
+      document.getElementById("successScreen").classList.add("show");
+    } catch (err) {
+      console.error(err);
+      document.getElementById("alertError").classList.add("show");
+      btn.disabled = false;
+      btn.textContent = "Submit Request →";
+    }
+  }
+
+  function resetForm() {
+    selectedType = "";
+    document.getElementById("mainForm").style.display = "block";
+    document.getElementById("successScreen").classList.remove("show");
+    document.getElementById("formBody").classList.remove("show");
+    document.getElementById("bugFields").classList.remove("show");
+    document.getElementById("featureFields").classList.remove("show");
+    document.getElementById("docsFields").classList.remove("show");
+    document.querySelectorAll(".type-card").forEach(c => c.classList.remove("selected"));
+    document.querySelectorAll("input, textarea, select").forEach(el => {
+      el.value = "";
+      el.classList.remove("invalid");
+    });
+    document.querySelectorAll(".err").forEach(e => e.classList.remove("show"));
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = false;
+    btn.textContent = "Submit Request →";
+  }
+</script>
+</body>
+</html>
